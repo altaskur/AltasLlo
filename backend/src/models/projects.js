@@ -5,6 +5,9 @@ const projectsSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -15,12 +18,10 @@ const projectsSchema = new mongoose.Schema({
   database: 'altasLlo',
 });
 
-projectsSchema.pre('remove', async (next) => {
-  // eslint-disable-next-line no-underscore-dangle
+projectsSchema.pre('remove', async function(next) {
   await this.model('Task').deleteMany({ project: this._id });
   next();
 });
-
 const Projects = mongoose.model('projects', projectsSchema);
 
 module.exports = Projects;

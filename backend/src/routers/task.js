@@ -2,13 +2,16 @@ const express = require('express');
 
 const router = express.Router();
 const Task = require('../models/tasks');
+const { verifyToken } = require('../auth/auth');
 
-router.get('/', async (req, res) => {
+router.get('/:projectId', verifyToken, async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const { projectId } = req.params;
+    const tasks = await Task.find({ project: projectId });
+
     res.status(200).json(tasks);
   } catch (error) {
-    console.error('Error fetching tasks:', error);
+    console.error('Error fetching tasks');
     res.status(500).json({ error: 'Error fetching tasks' });
   }
 });
@@ -23,13 +26,14 @@ router.get('/:id', async (req, res) => {
     }
     res.status(200).json(task);
   } catch (error) {
-    console.error('Error fetching task:', error);
+    console.error('Error fetching task');
     res.status(500).json({ error: 'Error fetching task' });
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
+    console.log("req: ",req.body)
     const task = await Task.create(req.body);
     res.status(200).json(task);
   } catch (error) {
@@ -53,7 +57,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id',verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const deletedTask = await Task.findByIdAndDelete(id);

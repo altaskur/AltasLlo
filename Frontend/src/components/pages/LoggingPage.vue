@@ -48,7 +48,6 @@ const fetchData = async (formData) => {
 
 
 <template>
-   
    <main>
       <section class="card">
          <section class="body">
@@ -115,6 +114,12 @@ section.card section.body form {
    justify-content: center;
    gap: 1rem;
 }
+section.body form input, section.body form button {
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        border: none;
+        border: 1px solid var(--color-border);
+    }
 
 section.card section.footer {
    display: flex;
@@ -133,6 +138,8 @@ figcaption.logo{
 figcaption.logo img{
    height: 2rem;
    width: 2rem;
+   fill: var(--color-heading);
+   color: var(--color-heading);
 }
 .error-message {
   color: red;

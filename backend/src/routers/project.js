@@ -1,11 +1,11 @@
 const express = require('express');
-
+const { verifyToken } = require('../auth/auth');
 const router = express.Router();
 const Project = require('../models/projects');
 
-router.get('/', async (req, res) => {
+router.get('/',verifyToken, async (req, res) => {
   try {
-    const projects = await Project.find();
+    const projects = await Project.find({ user: req.user.id });
     res.status(200).json(projects);
   } catch (error) {
     console.error('Error fetching projects');
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id',verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const project = await Project.findById(id);
@@ -24,9 +24,18 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/',verifyToken, async (req, res) => {
+  console.log('req.body: ', req.body);
   try {
-    const project = await Project.create(req.body);
+    const { name, description } = req.body;
+    const userId = req.user.id; // Obtiene la ID del usuario desde req.user
+
+    const project = await Project.create({
+      name,
+      description,
+      user: userId,
+    });
+
     res.status(200).json(project);
   } catch (error) {
     console.error('Error creating project');
@@ -34,7 +43,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id',verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
     const updatedProject = await Project.findByIdAndUpdate(id, req.body, { new: true });
@@ -49,7 +58,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken,async (req, res) => {
   try {
     const { id } = req.params;
     const deletedProject = await Project.findByIdAndDelete(id);
